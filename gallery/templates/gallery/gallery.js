@@ -477,6 +477,8 @@ function gallery_player() {
 	    ret['img_height'] = ret['height'];
 	    ret['img_width'] = ret['width'];
 	}
+	console.log("Width", img_width);
+	console.log("Height", img_height);
 	return ret;
     }
     

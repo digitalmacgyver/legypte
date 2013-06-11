@@ -580,8 +580,6 @@ function gallery_player() {
 	    .width( img['img_width'] )
 	    .height( img['img_height'] );
 	
-	console.log("About to call gallery show:", State.slide_duration );
-
 	clearTimeout( State.timer );
 	State.timer = setTimeout( gallery_show , State.slide_duration );
 	

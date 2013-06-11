@@ -127,25 +127,24 @@ def populate_image_data_for_owner(uid):
     return ( source_info, images )
 
 def display( request ):
-    return render(request, 'gallery/display.html', {})
+    return render(request, 'gallery/display.html', { 'user' : False } )
+
+def user_display( request, user ):
+    return render( request, 'gallery/display.html', { 'user' : user} )
 
 def gallery( request ):
 #    (source_info, images) = populate_image_data_for_owner('95564854@N02')
 #    (source_info, images) = populate_image_data_for_owner('44494372@N05')
-#    return user( 'default' )
     ( source_info, images ) = populate_image_data_for_owner( 'default' )
     return render(request, 'gallery/gallery.js', { 
             'sources' : json.dumps(source_info),
             'images' : json.dumps(images) 
             })
 
-# DEBUG - in the future figoure how how to render display.html with
-# the input user.  The populate_image_for_owner does the right thing,
-# but the problem is today we generate the javascript from a static
-# URL with no possible parameters.
-def user( request, user ):
+def user_gallery( request, user ):
     ( source_info, images ) = populate_image_data_for_owner( user )
     return render(request, 'gallery/gallery.js', { 
             'sources' : json.dumps(source_info),
             'images' : json.dumps(images) 
             })
+

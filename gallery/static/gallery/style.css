@@ -13,6 +13,11 @@
     src: url("fonts/Existence-UnicaseLight.otf") format("opentype"); 
 }
 
+html {
+    height: 100%;
+    background-color: black;
+}
+
 body {
     font-family: "Existence", sans-serif;
 }

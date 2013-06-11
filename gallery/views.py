@@ -31,8 +31,6 @@ def populate_image_data_for_owner(uid):
     if ( uid != 'default' ):
         uid = f.people_findByUsername( username=uid )[0].get( 'nsid' )
 
-    print "GOT HERE - UID = ", uid
-
     while ( not done ):
         if ( uid == 'default' ):
             download_set =  f.photosets_getPhotos(

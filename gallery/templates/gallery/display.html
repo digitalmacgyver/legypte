@@ -1,0 +1,75 @@
+{% load staticfiles %}
+
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="{% static 'gallery/style.css' %}" />
+    
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    
+    <script src="gallery.js"></script>
+    
+    <title>Description de l'Egypte</title>
+  </head>
+
+  <body class="gallery">
+
+    <figure>
+      <h2 class="error display:none" id="no_images_selected">
+	No Images Match Your Selection Criteria
+      </h2>
+      <img class="center" src="image/1.jpg" id="slide_show" />
+    </figure>
+
+    <div id="control_panel">
+      <fieldset id="sources" class="sources">
+	<legend>sources</legend>
+	<span id="sources_insertion_point"></span>
+      </fieldset>
+
+      <fieldset id="tags" class="tags">
+	<legend>selection</legend>
+	<div style="display:none">
+	<label>Include un-tagged photos:
+	  <input type="checkbox" name="include_untagged" id="include_untagged" value="untagged" />
+	</label>
+	</div>
+	<div class="tagtable">
+	<table border="1px">
+	  <thead id="tag_header">
+	  <tr>
+	    <th>Show photos with</th>
+	    <th>
+	      Any <input type="radio" name="any_or_all" id="any_or_all_any" value="any" checked><br />
+	      All <input type="radio" name="any_or_all" id="any_or_all_all" value="all"><br />
+	      of the selected tags
+	      <button id="select_all" type="button">Select All</button>
+	      <button id="clear_all" type="button">Clear All</button>
+	    </th>
+	    <th>But not these tags</th>
+	  </tr>
+	  </thead>
+	  <tbody id="tag_body" class="tagtable">
+	  </tbody>
+	</table>
+	</div>
+      </fieldset>
+
+      <fieldset id="options" class="options">
+	<legend>options</legend>
+	<label><input id="slide_duration" type="number" />Seconds Between Slides<label>
+      </fieldset>
+
+      <div class="clear">
+	<button id="start_show" type="button">Start Show</button>
+	<button id="full_screen" type="button">Full Screen</button>
+      </div>
+    </div>
+
+    <div id="show_control_panel">
+      <img id="control_panel_icon" src="{% static 'gallery/images/control_panel_icon.png' %}" />
+    </div>
+    
+
+  </body>
+</html>

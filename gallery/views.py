@@ -31,26 +31,29 @@ def populate_image_data_for_owner(uid):
     if ( uid != 'default' ):
         uid = f.people_findByUsername( username=uid )[0].get( 'nsid' )
 
-    while ( not done ):
-        if ( uid == 'default' ):
-            download_set =  f.photosets_getPhotos(
-                photoset_id = '72157634011366503',
-                extras = 'tags,url_' + ',url_'.join( url_types ),
-                per_page = 500,
-                page = page_number )[0]
-        else:
-            download_set =  f.people_getPublicPhotos(
-                user_id = uid,
-                extras = 'tags,url_' + ',url_'.join( url_types ),
-                per_page = 500,
-                page = page_number )[0]
+    try:
+        while ( not done ):
+            if ( uid == 'default' ):
+                download_set =  f.photosets_getPhotos(
+                    photoset_id = '72157634011366503',
+                    extras = 'tags,url_' + ',url_'.join( url_types ),
+                    per_page = 500,
+                    page = page_number )[0]
+            else:
+                download_set =  f.people_getPublicPhotos(
+                    user_id = uid,
+                    extras = 'tags,url_' + ',url_'.join( url_types ),
+                    per_page = 500,
+                    page = page_number )[0]
 
-        flickr_images += download_set
+            flickr_images += download_set
 
-        if ( len( download_set ) == 500 ):
-            page_number += 1
-        else:
-            done = True
+            if ( len( download_set ) == 500 ):
+                page_number += 1
+            else:
+                done = True
+    except Exception as e:
+        print "ERROR:", e
 
     source_info = {
         'source_my_photos' : {

@@ -1,10 +1,10 @@
-from django.conf.urls import patterns, include, url
+from django.urls import include, path
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
 # admin.autodiscover()
 
-urlpatterns = patterns('',
+urlpatterns = patterns = [
     # Examples:
     # url(r'^$', 'legypte.views.home', name='home'),
     # url(r'^legypte/', include('legypte.foo.urls')),
@@ -15,5 +15,5 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     # url(r'^admin/', include(admin.site.urls)),
 #                       url( r'^$', include( 'gallery.urls', namespace='gallery' ) ),
-                       url( r'', include( 'gallery.urls', namespace='gallery' ) ),
-)
+    path( r'', include( 'gallery.urls' ) ),
+]

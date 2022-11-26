@@ -53,7 +53,7 @@ def populate_image_data_for_owner(uid):
             else:
                 done = True
     except Exception as e:
-        print "ERROR:", e
+        print( "ERROR:", e )
 
     source_info = {
         'source_my_photos' : {

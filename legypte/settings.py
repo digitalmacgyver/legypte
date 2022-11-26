@@ -121,7 +121,7 @@ WSGI_APPLICATION = 'legypte.wsgi.application'
 #    # Don't forget to use absolute paths, not relative paths.
 #)
 
-TEMPATES = [
+TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'APP_DIRS': True,

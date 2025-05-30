@@ -5,7 +5,6 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 DEBUG = True
-TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
     ( 'Matthew Hayward', 'mjhayward+legypte-admin@gmail.com'),
@@ -15,7 +14,7 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'ENGINE': 'django.db.backends.postgresql', # PostgreSQL for Heroku
         'NAME': '',                      # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
         'USER': '',
@@ -71,6 +70,9 @@ STATIC_ROOT = os.path.join( BASE_DIR, 'staticfiles' )
 # Example: "http://example.com/static/", "http://static.example.com/"
 STATIC_URL = '/static/'
 
+# WhiteNoise configuration for static files
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 #PROJECT_PATH = os.path.dirname( "%s/../../gallery/" % os.path.abspath( __file__ ) )
 
 # Additional locations of static files
@@ -109,6 +111,12 @@ SECRET_KEY = 'sh&1p)1b@vk(hfin8me&*kb0$=3qo02dbb3p$l1ivfpj&84@sy'
 #    # Uncomment the next line for simple clickjacking protection:
 #    # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 #)
+
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'django.middleware.common.CommonMiddleware',
+]
 
 ROOT_URLCONF = 'legypte.urls'
 
@@ -178,3 +186,6 @@ import dj_database_url
 DATABASES['default'] = dj_database_url.config()
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Default auto field
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

@@ -4,7 +4,7 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
 
 ADMINS = (
     ( 'Matthew Hayward', 'mjhayward+legypte-admin@gmail.com'),
@@ -93,7 +93,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 #)
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = 'sh&1p)1b@vk(hfin8me&*kb0$=3qo02dbb3p$l1ivfpj&84@sy'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'sh&1p)1b@vk(hfin8me&*kb0$=3qo02dbb3p$l1ivfpj&84@sy')
 
 # List of callables that know how to import templates from various sources.
 #TEMPLATE_LOADERS = (
@@ -150,8 +150,8 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
 )
 
-FLICKR_APP_ID = 'fe295978f4f7713eafa0ed662c1e07de'
-FLICKR_API_SECRET = '63c67768e046bf0e'
+FLICKR_APP_ID = os.environ.get('FLICKR_APP_ID', 'fe295978f4f7713eafa0ed662c1e07de')
+FLICKR_API_SECRET = os.environ.get('FLICKR_API_SECRET', '63c67768e046bf0e')
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to

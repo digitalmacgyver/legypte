@@ -156,12 +156,12 @@ def gallery( request ):
     return render(request, 'gallery/gallery.js', { 
             'sources' : json.dumps(source_info),
             'images' : json.dumps(images) 
-            })
+            }, content_type='application/javascript')
 
 def user_gallery( request, user ):
     ( source_info, images ) = populate_image_data_for_owner( user )
     return render(request, 'gallery/gallery.js', { 
             'sources' : json.dumps(source_info),
             'images' : json.dumps(images) 
-            })
+            }, content_type='application/javascript')
 

@@ -62,6 +62,8 @@ def populate_image_data_for_owner(uid):
                 download_set = response[0].get('photo', [])
 
             print(f"Downloaded {len(download_set)} photos")
+            if len(download_set) > 0:
+                print(f"  First photo sample: id={download_set[0].get('id')}, tags='{download_set[0].get('tags', '')}'")
             flickr_images += download_set
 
             if ( len( download_set ) == 500 ):
@@ -121,8 +123,11 @@ def populate_image_data_for_owner(uid):
                 # structure, and the tags property provided by this
                 # source.
                 tags_string = image.get( 'tags', '' )
+                print(f"Image {image.get('id')} tags_string: '{tags_string}'")
                 if tags_string:
-                    for tag in tags_string.split():
+                    tag_list = tags_string.split()
+                    print(f"  Split into {len(tag_list)} tags: {tag_list[:5]}..." if len(tag_list) > 5 else f"  Split into {len(tag_list)} tags: {tag_list}")
+                    for tag in tag_list:
                         tag_id = None
                         if tag in existing_tags:
                             tag_id = existing_tags[tag]
@@ -134,6 +139,8 @@ def populate_image_data_for_owner(uid):
                         if tag not in source_info[source]['tags']:
                             source_info[source]['tags'][tag] = tag_id
                         i['tags'][tag] = tag_id
+                else:
+                    print(f"  No tags for image {image.get('id')}")
                 for url_type in url_types:
                     url = image.get( 'url_' + url_type )
                     if url:
@@ -150,11 +157,17 @@ def populate_image_data_for_owner(uid):
     random.shuffle( images )
     
     # Debug output
+    print(f"\n=== FINAL RESULTS ===")
     print(f"Total images processed: {len(images)}")
     print(f"Total unique tags found: {len(existing_tags)}")
     print(f"Tags in source_info: {len(source_info['source_my_photos']['tags'])}")
     if len(source_info['source_my_photos']['tags']) > 0:
         print("Sample tags:", list(source_info['source_my_photos']['tags'].items())[:5])
+    else:
+        print("NO TAGS IN SOURCE_INFO!")
+    if len(images) > 0:
+        print(f"First image tags: {images[0].get('tags', {})}")
+    print(f"===================\n")
     
     return ( source_info, images )
 

@@ -34,17 +34,19 @@ def populate_image_data_for_owner(uid):
     try:
         while ( not done ):
             if ( uid == 'default' ):
-                download_set =  f.photosets_getPhotos(
+                response =  f.photosets_getPhotos(
                     photoset_id = '72157634011366503',
                     extras = 'tags,url_' + ',url_'.join( url_types ),
                     per_page = 500,
-                    page = page_number )[0]
+                    page = page_number )
+                download_set = response[0].get('photo', [])
             else:
-                download_set =  f.people_getPublicPhotos(
+                response =  f.people_getPublicPhotos(
                     user_id = uid,
                     extras = 'tags,url_' + ',url_'.join( url_types ),
                     per_page = 500,
-                    page = page_number )[0]
+                    page = page_number )
+                download_set = response[0].get('photo', [])
 
             flickr_images += download_set
 
@@ -54,6 +56,8 @@ def populate_image_data_for_owner(uid):
                 done = True
     except Exception as e:
         print( "ERROR:", e )
+        import traceback
+        traceback.print_exc()
 
     source_info = {
         'source_my_photos' : {
@@ -101,16 +105,20 @@ def populate_image_data_for_owner(uid):
                 # two places: the tags property of the image data
                 # structure, and the tags property provided by this
                 # source.
-                for tag in image.get( 'tags' ).split():
-                    tag_id = None
-                    if tag in existing_tags:
-                        tag_id = existing_tags[tag];
-                    else:
-                        tag_id = "tag_id_" + str(tag_number)
-                        existing_tags[tag] = tag_id
-                        tag_number += 1
-                    source_info[source]['tags'][tag] = tag_id
-                    i['tags'][tag] = tag_id
+                tags_string = image.get( 'tags', '' )
+                if tags_string:
+                    for tag in tags_string.split():
+                        tag_id = None
+                        if tag in existing_tags:
+                            tag_id = existing_tags[tag]
+                        else:
+                            tag_id = "tag_id_" + str(tag_number)
+                            existing_tags[tag] = tag_id
+                            tag_number += 1
+                        # Only add to source_info if not already present
+                        if tag not in source_info[source]['tags']:
+                            source_info[source]['tags'][tag] = tag_id
+                        i['tags'][tag] = tag_id
                 for url_type in url_types:
                     url = image.get( 'url_' + url_type )
                     if url:
@@ -125,6 +133,14 @@ def populate_image_data_for_owner(uid):
                 existing_images[i['id']] = len( images ) - 1
 
     random.shuffle( images )
+    
+    # Debug output
+    print(f"Total images processed: {len(images)}")
+    print(f"Total unique tags found: {len(existing_tags)}")
+    print(f"Tags in source_info: {len(source_info['source_my_photos']['tags'])}")
+    if len(source_info['source_my_photos']['tags']) > 0:
+        print("Sample tags:", list(source_info['source_my_photos']['tags'].items())[:5])
+    
     return ( source_info, images )
 
 def display( request ):

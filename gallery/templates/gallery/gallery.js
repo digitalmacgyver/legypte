@@ -578,6 +578,13 @@ function gallery_player() {
     }
 
     function gallery_show() {
+	// Check if we have any images
+	if (State.images.length === 0) {
+	    console.log('No images available to display');
+	    $( "#no_images_selected" ).text('No images available from Flickr').css( 'display', 'block' );
+	    return;
+	}
+	
 	// Display the image
 	State.current_image = State.next_image;
 	var img = get_best_size( State.images[State.current_image] );
@@ -597,13 +604,15 @@ function gallery_player() {
 	    // out of images.
 	    State.next_image = 0;
 	}
-	img = get_best_size( State.images[State.next_image] );
-	// DEBUG - Determine if setting width and height like this is
-	// icky, refactor if necessary.
-	$( "<img/>" )
-	    .attr( 'src', img['url'] )
-	    .width( img['img_width'] )
-	    .height( img['img_height'] );
+	if (State.images.length > State.next_image) {
+	    img = get_best_size( State.images[State.next_image] );
+	    // DEBUG - Determine if setting width and height like this is
+	    // icky, refactor if necessary.
+	    $( "<img/>" )
+		.attr( 'src', img['url'] )
+		.width( img['img_width'] )
+		.height( img['img_height'] );
+	}
     }
 }
 

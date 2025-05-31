@@ -16,8 +16,15 @@ users = [{ 'uid' : '95564854@N02', 'username' : 'legypte'},
          ]
 
 def populate_image_data_for_owner(uid):
-    f = flickrapi.FlickrAPI(settings.FLICKR_APP_ID,
-                            settings.FLICKR_API_SECRET)
+    print(f"populate_image_data_for_owner called with uid: {uid}")
+    print(f"FLICKR_APP_ID from settings: {settings.FLICKR_APP_ID[:10] if settings.FLICKR_APP_ID else 'None'}...")
+    
+    try:
+        f = flickrapi.FlickrAPI(settings.FLICKR_APP_ID,
+                                settings.FLICKR_API_SECRET)
+    except Exception as e:
+        print(f"ERROR creating FlickrAPI: {e}")
+        return ({ 'source_my_photos': { 'display': 'My Photos', 'tags': {} } }, [])
     
     # URL types of interest
     url_types = ['m','n','z','c','l','o']
@@ -29,11 +36,16 @@ def populate_image_data_for_owner(uid):
     page_number = 1
 
     if ( uid != 'default' ):
-        uid = f.people_findByUsername( username=uid )[0].get( 'nsid' )
+        try:
+            uid = f.people_findByUsername( username=uid )[0].get( 'nsid' )
+        except Exception as e:
+            print(f"ERROR finding user {uid}: {e}")
+            return ({ 'source_my_photos': { 'display': 'My Photos', 'tags': {} } }, [])
 
     try:
         while ( not done ):
             if ( uid == 'default' ):
+                print(f"Fetching photoset 72157634011366503, page {page_number}")
                 response =  f.photosets_getPhotos(
                     photoset_id = '72157634011366503',
                     extras = 'tags,url_' + ',url_'.join( url_types ),
@@ -41,6 +53,7 @@ def populate_image_data_for_owner(uid):
                     page = page_number )
                 download_set = response[0].get('photo', [])
             else:
+                print(f"Fetching public photos for user {uid}, page {page_number}")
                 response =  f.people_getPublicPhotos(
                     user_id = uid,
                     extras = 'tags,url_' + ',url_'.join( url_types ),
@@ -48,6 +61,7 @@ def populate_image_data_for_owner(uid):
                     page = page_number )
                 download_set = response[0].get('photo', [])
 
+            print(f"Downloaded {len(download_set)} photos")
             flickr_images += download_set
 
             if ( len( download_set ) == 500 ):
@@ -55,9 +69,10 @@ def populate_image_data_for_owner(uid):
             else:
                 done = True
     except Exception as e:
-        print( "ERROR:", e )
+        print( f"ERROR fetching from Flickr: {e}" )
         import traceback
         traceback.print_exc()
+        return ({ 'source_my_photos': { 'display': 'My Photos', 'tags': {} } }, [])
 
     source_info = {
         'source_my_photos' : {

@@ -20,8 +20,10 @@ def populate_image_data_for_owner(uid):
     print(f"FLICKR_APP_ID from settings: {settings.FLICKR_APP_ID[:10] if settings.FLICKR_APP_ID else 'None'}...")
     
     try:
+        # Use parsed-json format to get JSON responses instead of XML
         f = flickrapi.FlickrAPI(settings.FLICKR_APP_ID,
-                                settings.FLICKR_API_SECRET)
+                                settings.FLICKR_API_SECRET,
+                                format='parsed-json')
     except Exception as e:
         print(f"ERROR creating FlickrAPI: {e}")
         return ({ 'source_my_photos': { 'display': 'My Photos', 'tags': {} } }, [])
@@ -37,7 +39,8 @@ def populate_image_data_for_owner(uid):
 
     if ( uid != 'default' ):
         try:
-            uid = f.people_findByUsername( username=uid )[0].get( 'nsid' )
+            user_response = f.people_findByUsername( username=uid )
+            uid = user_response.get('user', {}).get('nsid', uid)
         except Exception as e:
             print(f"ERROR finding user {uid}: {e}")
             return ({ 'source_my_photos': { 'display': 'My Photos', 'tags': {} } }, [])
@@ -51,7 +54,8 @@ def populate_image_data_for_owner(uid):
                     extras = 'tags,url_' + ',url_'.join( url_types ),
                     per_page = 500,
                     page = page_number )
-                download_set = response[0].get('photo', [])
+                # JSON format returns dict with 'photoset' key
+                download_set = response.get('photoset', {}).get('photo', [])
             else:
                 print(f"Fetching public photos for user {uid}, page {page_number}")
                 response =  f.people_getPublicPhotos(
@@ -59,7 +63,8 @@ def populate_image_data_for_owner(uid):
                     extras = 'tags,url_' + ',url_'.join( url_types ),
                     per_page = 500,
                     page = page_number )
-                download_set = response[0].get('photo', [])
+                # JSON format returns dict with 'photos' key for people_getPublicPhotos
+                download_set = response.get('photos', {}).get('photo', [])
 
             print(f"Downloaded {len(download_set)} photos")
             if len(download_set) > 0:

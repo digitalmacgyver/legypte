@@ -325,8 +325,6 @@ function gallery_player() {
     }
 
     function add_sources_and_tags_to_control() {
-	console.log('Starting add_sources_and_tags_to_control');
-	console.log('State.sources:', State.sources);
 	var source_elements = '';
 	var tag_elements = '';
 
@@ -366,8 +364,6 @@ function gallery_player() {
 		tag_elements += tag_table_row_html( keys[i], State.tags[keys[i]].tag_id_prefix );
 	}
 	// Insert into DOM.
-	console.log('Appending tag elements:', tag_elements);
-	console.log('Number of tags:', Object.keys(State.tags).length);
 	$( "#tag_body" ).append( tag_elements );
 	// Add an event for when a radio button is changed.
 	$( "#tags" ).on( 'change', handle_tag_changes );
@@ -378,7 +374,6 @@ function gallery_player() {
 
 	// Source stuff
 	// Insert into DOM.
-	console.log('Appending source elements:', source_elements);
 	$( "#sources_insertion_point" ).append( source_elements );
 	// Bind events.
 	$( "#sources" ).on( 'change', sources_update_tags );
@@ -411,9 +406,7 @@ function gallery_player() {
     }
 
     function build_control_panel() {
-	console.log('Building control panel');
-	// Temporarily make control panel visible for debugging
-	$( "#control_panel" ).css( { opacity: 0.9, display: 'block' } );
+	$( "#control_panel" ).css( { opacity: 0.5, display: 'none' } );
 	$( "#show_control_panel" ).css( { opacity: 0.3 } );
 
 	// Because event handling is mixed up between tags and
@@ -580,7 +573,6 @@ function gallery_player() {
     function gallery_show() {
 	// Check if we have any images
 	if (State.images.length === 0) {
-	    console.log('No images available to display');
 	    $( "#no_images_selected" ).text('No images available from Flickr').css( 'display', 'block' );
 	    return;
 	}
@@ -616,11 +608,4 @@ function gallery_player() {
     }
 }
 
-$( document ).ready( function() {
-    console.log('Document ready, calling gallery_player');
-    try {
-        gallery_player();
-    } catch (e) {
-        console.error('Error in gallery_player:', e);
-    }
-});
+$( document ).ready( gallery_player );

@@ -16,8 +16,6 @@ users = [{ 'uid' : '95564854@N02', 'username' : 'legypte'},
          ]
 
 def populate_image_data_for_owner(uid):
-    print(f"populate_image_data_for_owner called with uid: {uid}")
-    print(f"FLICKR_APP_ID from settings: {settings.FLICKR_APP_ID[:10] if settings.FLICKR_APP_ID else 'None'}...")
     
     try:
         # Use parsed-json format to get JSON responses instead of XML
@@ -25,7 +23,6 @@ def populate_image_data_for_owner(uid):
                                 settings.FLICKR_API_SECRET,
                                 format='parsed-json')
     except Exception as e:
-        print(f"ERROR creating FlickrAPI: {e}")
         return ({ 'source_my_photos': { 'display': 'My Photos', 'tags': {} } }, [])
     
     # URL types of interest
@@ -42,13 +39,11 @@ def populate_image_data_for_owner(uid):
             user_response = f.people_findByUsername( username=uid )
             uid = user_response.get('user', {}).get('nsid', uid)
         except Exception as e:
-            print(f"ERROR finding user {uid}: {e}")
             return ({ 'source_my_photos': { 'display': 'My Photos', 'tags': {} } }, [])
 
     try:
         while ( not done ):
             if ( uid == 'default' ):
-                print(f"Fetching photoset 72157634011366503, page {page_number}")
                 response =  f.photosets_getPhotos(
                     photoset_id = '72157634011366503',
                     extras = 'tags,url_' + ',url_'.join( url_types ),
@@ -57,7 +52,6 @@ def populate_image_data_for_owner(uid):
                 # JSON format returns dict with 'photoset' key
                 download_set = response.get('photoset', {}).get('photo', [])
             else:
-                print(f"Fetching public photos for user {uid}, page {page_number}")
                 response =  f.people_getPublicPhotos(
                     user_id = uid,
                     extras = 'tags,url_' + ',url_'.join( url_types ),
@@ -66,9 +60,6 @@ def populate_image_data_for_owner(uid):
                 # JSON format returns dict with 'photos' key for people_getPublicPhotos
                 download_set = response.get('photos', {}).get('photo', [])
 
-            print(f"Downloaded {len(download_set)} photos")
-            if len(download_set) > 0:
-                print(f"  First photo sample: id={download_set[0].get('id')}, tags='{download_set[0].get('tags', '')}'")
             flickr_images += download_set
 
             if ( len( download_set ) == 500 ):
@@ -77,8 +68,6 @@ def populate_image_data_for_owner(uid):
                 done = True
     except Exception as e:
         print( f"ERROR fetching from Flickr: {e}" )
-        import traceback
-        traceback.print_exc()
         return ({ 'source_my_photos': { 'display': 'My Photos', 'tags': {} } }, [])
 
     source_info = {
@@ -128,10 +117,8 @@ def populate_image_data_for_owner(uid):
                 # structure, and the tags property provided by this
                 # source.
                 tags_string = image.get( 'tags', '' )
-                print(f"Image {image.get('id')} tags_string: '{tags_string}'")
                 if tags_string:
                     tag_list = tags_string.split()
-                    print(f"  Split into {len(tag_list)} tags: {tag_list[:5]}..." if len(tag_list) > 5 else f"  Split into {len(tag_list)} tags: {tag_list}")
                     for tag in tag_list:
                         tag_id = None
                         if tag in existing_tags:
@@ -144,8 +131,6 @@ def populate_image_data_for_owner(uid):
                         if tag not in source_info[source]['tags']:
                             source_info[source]['tags'][tag] = tag_id
                         i['tags'][tag] = tag_id
-                else:
-                    print(f"  No tags for image {image.get('id')}")
                 for url_type in url_types:
                     url = image.get( 'url_' + url_type )
                     if url:
@@ -161,18 +146,6 @@ def populate_image_data_for_owner(uid):
 
     random.shuffle( images )
     
-    # Debug output
-    print(f"\n=== FINAL RESULTS ===")
-    print(f"Total images processed: {len(images)}")
-    print(f"Total unique tags found: {len(existing_tags)}")
-    print(f"Tags in source_info: {len(source_info['source_my_photos']['tags'])}")
-    if len(source_info['source_my_photos']['tags']) > 0:
-        print("Sample tags:", list(source_info['source_my_photos']['tags'].items())[:5])
-    else:
-        print("NO TAGS IN SOURCE_INFO!")
-    if len(images) > 0:
-        print(f"First image tags: {images[0].get('tags', {})}")
-    print(f"===================\n")
     
     return ( source_info, images )
 
